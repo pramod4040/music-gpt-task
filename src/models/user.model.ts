@@ -1,4 +1,11 @@
 import { SubscriptionStatus } from "generated/prisma/enums";
+export interface GetUserForLogin {
+    id: string;
+    email: string;
+    password: string;
+    display_name: string;
+    subscription_status: SubscriptionStatus;
+}
 
 export interface User {
     id?: string;
@@ -21,4 +28,12 @@ export interface JwtUserPayload {
     email: string;
     display_name: string;
     subscription_status: SubscriptionStatus;
+}
+
+export interface UserWithRefreshToken {
+    id: string;
+    email: string;
+    display_name: string;
+    subscription_status: SubscriptionStatus;
+    refresh_token: string | null;
 }

@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from "@nestjs/common";
 import { UserService } from "./service/users.service";
-import { CreateUserDto, LoginUserDto } from "./dto/user.dto";
+import { CreateUserDto, LoginUserDto, RefreshTokenDto } from "./dto/user.dto";
 import { CreateUserInterface } from "../models/user.model";
 import { SubscriptionStatus } from "generated/prisma/enums";
 import { AuthService } from "./service/auth.service";
@@ -57,15 +57,40 @@ export class UsersController {
                 subscription_status: user.subscription_status
             }
 
-            const token = await this.authService.generateJwtToken(payload);
+            const accessToken = await this.authService.generateJwtToken(payload);
+            const refreshToken = await this.authService.generateRefreshToken(payload);
+
+            await this.authService.saveHashedRefreshToken(user.id!, refreshToken);
+
             return {
                 status: "success",
                 data: {
-                    accesstoken: token,
+                    accessToken,
+                    refreshToken,
                     user: payload
                 }
             }
        } catch (error) {
+            return {
+                status: "error",
+                message: error.message
+            }
+        }
+    }
+
+    @Post("refresh")
+    async refresh(
+        @Body() refreshTokenDto: RefreshTokenDto
+    ) {
+        try {
+            const tokens = await this.authService.validateAndRotateRefreshToken(
+                refreshTokenDto.refreshToken
+            );
+            return {
+                status: "success",
+                data: tokens
+            }
+        } catch (error) {
             return {
                 status: "error",
                 message: error.message

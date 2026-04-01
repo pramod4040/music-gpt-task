@@ -30,6 +30,7 @@ model User {
   password           String
   display_name       String
   subscription_status SubscriptionStatus @default(FREE)
+  refresh_token      String?
 
   created_at         DateTime            @default(now())
   updated_at         DateTime            @updatedAt

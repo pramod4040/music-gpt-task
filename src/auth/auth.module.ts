@@ -16,6 +16,7 @@ export class AuthModule implements NestModule {
         { path: 'metrics', method: RequestMethod.ALL },
         { path: '/auth/register', method: RequestMethod.ALL },
         { path: '/auth/login', method: RequestMethod.ALL },
+        { path: '/auth/refresh', method: RequestMethod.ALL },
       )
       .forRoutes(
         { path: '*', method: RequestMethod.ALL },
