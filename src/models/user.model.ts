@@ -36,4 +36,5 @@ export interface UserWithRefreshToken {
     display_name: string;
     subscription_status: SubscriptionStatus;
     refresh_token: string | null;
+    force_login: boolean;
 }

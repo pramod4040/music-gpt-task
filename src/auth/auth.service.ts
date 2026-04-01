@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { UserPrismaRepository } from "../repositories/user.prisma.repository"
+import { UserPrismaRepository } from "./repositories/user.prisma.repository";
 import * as bcrypt from 'bcrypt';
-import { User, JwtUserPayload } from "../../models/user.model";
+import { User, JwtUserPayload } from "../models/user.model";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 
@@ -9,7 +9,7 @@ import { ConfigService } from "@nestjs/config";
 export class AuthService {
     constructor(
         private userRepository: UserPrismaRepository,
-        private jwtService: JwtService, 
+        private jwtService: JwtService,
         private configService: ConfigService
     ) {}
 
@@ -27,21 +27,17 @@ export class AuthService {
     }
 
     async generateJwtToken(user: JwtUserPayload): Promise<string> {
-        const accessToken = this.jwtService.sign(user, {
+        return this.jwtService.sign(user, {
             secret: this.configService.get('JWT_SECRET_KEY'),
             expiresIn: this.configService.get('JWT_EXPIRES_IN') || '10m',
         });
-
-        return accessToken;
     }
 
     async generateRefreshToken(user: JwtUserPayload): Promise<string> {
-        const refreshToken = this.jwtService.sign(user, {
+        return this.jwtService.sign(user, {
             secret: this.configService.get('JWT_REFRESH_SECRET_KEY'),
             expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN') || '7d',
         });
-
-        return refreshToken;
     }
 
     async saveHashedRefreshToken(userId: string, refreshToken: string): Promise<void> {
@@ -49,16 +45,19 @@ export class AuthService {
         await this.userRepository.updateRefreshToken(userId, hashed);
     }
 
+    async logout(userId: string): Promise<void> {
+        await this.userRepository.logout(userId);
+    }
+
     async validateAndRotateRefreshToken(
         refreshToken: string
     ): Promise<{ accessToken: string; refreshToken: string }> {
-
         // Verify JWT signature and expiry
-        let userPaylod = this.jwtService.verify(refreshToken, {
+        const userPayload = this.jwtService.verify(refreshToken, {
             secret: this.configService.get('JWT_REFRESH_SECRET_KEY'),
         });
 
-        const user = await this.userRepository.findById(userPaylod.id);
+        const user = await this.userRepository.findById(userPayload.id);
         if (!user || !user.refresh_token) {
             throw new UnauthorizedException('Invalid refresh token');
         }
@@ -72,7 +71,7 @@ export class AuthService {
         const payload: JwtUserPayload = {
             id: user.id,
             email: user.email,
-            display_name: user.display_name, 
+            display_name: user.display_name,
             subscription_status: user.subscription_status,
         };
 

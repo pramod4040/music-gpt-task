@@ -31,7 +31,10 @@ model User {
   display_name       String
   subscription_status SubscriptionStatus @default(FREE)
   refresh_token      String?
+  force_login        Boolean             @default(false)
 
+  isCanceled Boolean @default(false)
+  
   created_at         DateTime            @default(now())
   updated_at         DateTime            @updatedAt
 

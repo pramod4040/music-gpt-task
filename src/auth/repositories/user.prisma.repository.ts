@@ -7,7 +7,7 @@ import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class UserPrismaRepository implements IUserRepository {
-  constructor(private prisma: PrismaService ) { }
+  constructor(private prisma: PrismaService) {}
 
   async create(userData: CreateUserInterface): Promise<User> {
     const user = await this.prisma.user.create({
@@ -19,21 +19,18 @@ export class UserPrismaRepository implements IUserRepository {
       }
     });
 
-    return this.toModel(user); 
+    return this.toModel(user);
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
-      where: { email: email }
+      where: { email }
     });
     return user ? this.toModel(user) : null;
   }
 
   async findByEmailForLogin(email: string): Promise<GetUserForLogin | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { email: email }
-    });
-    return user;
+    return this.prisma.user.findUnique({ where: { email } });
   }
 
   async findById(id: string): Promise<UserWithRefreshToken | null> {
@@ -44,14 +41,22 @@ export class UserPrismaRepository implements IUserRepository {
       email: user.email,
       display_name: user.display_name,
       subscription_status: user.subscription_status as SubscriptionStatus,
-      refresh_token: user.refresh_token
+      refresh_token: user.refresh_token,
+      force_login: user.force_login
     };
   }
 
   async updateRefreshToken(id: string, hashedRefreshToken: string | null): Promise<void> {
     await this.prisma.user.update({
       where: { id },
-      data: { refresh_token: hashedRefreshToken }
+      data: { refresh_token: hashedRefreshToken, force_login: false }
+    });
+  }
+
+  async logout(id: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: { refresh_token: null, force_login: true }
     });
   }
 
@@ -59,7 +64,6 @@ export class UserPrismaRepository implements IUserRepository {
     await this.prisma.user.delete({ where: { id } });
   }
 
-  // Strips Prisma-specific types, returns plain object
   private toModel(prismaUser: any): User {
     return {
       id: prismaUser.id,
@@ -68,5 +72,4 @@ export class UserPrismaRepository implements IUserRepository {
       subscription_status: prismaUser.subscription_status as SubscriptionStatus
     };
   }
-
 }

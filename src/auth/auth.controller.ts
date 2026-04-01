@@ -1,53 +1,50 @@
-import { Controller, Post, Body } from "@nestjs/common";
-import { UserService } from "./service/users.service";
-import { CreateUserDto, LoginUserDto, RefreshTokenDto } from "./dto/user.dto";
+import { Controller, Post, Body, Req } from "@nestjs/common";
+import { Request } from "express";
+import { UserService } from "./user.service";
+import { AuthService } from "./auth.service";
+import { CreateUserDto, LoginUserDto, RefreshTokenDto } from "./dto/auth.dto";
 import { CreateUserInterface } from "../models/user.model";
 import { SubscriptionStatus } from "generated/prisma/enums";
-import { AuthService } from "./service/auth.service";
 
 
 @Controller('auth')
-export class UsersController {
+export class AuthController {
     constructor(
         private readonly userService: UserService,
         private readonly authService: AuthService
     ) {}
 
     @Post("register")
-    async register(
-        @Body() createUserDto: CreateUserDto
-    ) {
+    async register(@Body() createUserDto: CreateUserDto) {
         try {
-            let userPaylod: CreateUserInterface = {
+            const userPayload: CreateUserInterface = {
                 email: createUserDto.email,
                 password: createUserDto.password,
                 display_name: createUserDto.display_name,
                 subscription_status: SubscriptionStatus.FREE
-            }
-            const user = await this.userService.createUser(userPaylod);
+            };
+            const user = await this.userService.createUser(userPayload);
             return {
                 status: "success",
                 data: user
-            }
+            };
         } catch (error) {
             return {
                 status: "error",
                 message: error.message
-            }
+            };
         }
     }
 
     @Post("login")
-    async login(
-        @Body() loginUserDto: LoginUserDto
-    ) {
-       try {
+    async login(@Body() loginUserDto: LoginUserDto) {
+        try {
             const user = await this.authService.isValidUser(loginUserDto.email, loginUserDto.password);
             if (!user) {
                 return {
                     status: "error",
                     message: "Invalid email or password"
-                }
+                };
             }
 
             const payload = {
@@ -55,7 +52,7 @@ export class UsersController {
                 email: user.email,
                 display_name: user.display_name,
                 subscription_status: user.subscription_status
-            }
+            };
 
             const accessToken = await this.authService.generateJwtToken(payload);
             const refreshToken = await this.authService.generateRefreshToken(payload);
@@ -69,19 +66,33 @@ export class UsersController {
                     refreshToken,
                     user: payload
                 }
-            }
-       } catch (error) {
+            };
+        } catch (error) {
             return {
                 status: "error",
                 message: error.message
-            }
+            };
+        }
+    }
+
+    @Post("logout")
+    async logout(@Req() req: Request) {
+        try {
+            await this.authService.logout(req.user!.id);
+            return {
+                status: "success",
+                message: "Logged out successfully"
+            };
+        } catch (error) {
+            return {
+                status: "error",
+                message: error.message
+            };
         }
     }
 
     @Post("refresh")
-    async refresh(
-        @Body() refreshTokenDto: RefreshTokenDto
-    ) {
+    async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
         try {
             const tokens = await this.authService.validateAndRotateRefreshToken(
                 refreshTokenDto.refreshToken
@@ -89,12 +100,12 @@ export class UsersController {
             return {
                 status: "success",
                 data: tokens
-            }
+            };
         } catch (error) {
             return {
                 status: "error",
                 message: error.message
-            }
+            };
         }
     }
 }

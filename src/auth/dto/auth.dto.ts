@@ -1,12 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
-export class UserResponseDto {
-    id: string;
-    email: string;
-    display_name: string;
-    subscription_status: string;
-}
-
 export class CreateUserDto {
     email: string;
     password: string;
@@ -27,4 +20,3 @@ export class RefreshTokenDto {
     @IsString()
     refreshToken: string;
 }
-
