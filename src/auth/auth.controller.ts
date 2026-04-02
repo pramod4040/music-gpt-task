@@ -1,12 +1,23 @@
 import { Controller, Post, Body, Req } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiBody, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
 import { Request } from "express";
 import { UserService } from "./user.service";
 import { AuthService } from "./auth.service";
-import { CreateUserDto, LoginUserDto, RefreshTokenDto } from "./dto/auth.dto";
+import {
+    CreateUserDto,
+    LoginUserDto,
+    RefreshTokenDto,
+    RegisterResponseDto,
+    LoginResponseDto,
+    LogoutResponseDto,
+    RefreshResponseDto,
+    ErrorResponseDto,
+} from "./dto/auth.dto";
 import { CreateUserInterface } from "../models/user.model";
 import { SubscriptionStatus } from "generated/prisma/enums";
 
 
+@ApiTags("Auth")
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -15,6 +26,10 @@ export class AuthController {
     ) {}
 
     @Post("register")
+    @ApiOperation({ summary: "Register a new user" })
+    @ApiBody({ type: CreateUserDto })
+    @ApiResponse({ status: 201, description: "User registered successfully", type: RegisterResponseDto })
+    @ApiResponse({ status: 400, description: "Registration failed", type: ErrorResponseDto })
     async register(@Body() createUserDto: CreateUserDto) {
         try {
             const userPayload: CreateUserInterface = {
@@ -37,6 +52,10 @@ export class AuthController {
     }
 
     @Post("login")
+    @ApiOperation({ summary: "Login with email and password" })
+    @ApiBody({ type: LoginUserDto })
+    @ApiResponse({ status: 200, description: "Login successful", type: LoginResponseDto })
+    @ApiResponse({ status: 500, description: "Invalid credentials", type: ErrorResponseDto })
     async login(@Body() loginUserDto: LoginUserDto) {
         try {
             const user = await this.authService.isValidUser(loginUserDto.email, loginUserDto.password);
@@ -76,6 +95,10 @@ export class AuthController {
     }
 
     @Post("logout")
+    @ApiBearerAuth()
+    @ApiOperation({ summary: "Logout current user" })
+    @ApiResponse({ status: 200, description: "Logged out successfully", type: LogoutResponseDto })
+    @ApiResponse({ status: 401, description: "Unauthorized", type: ErrorResponseDto })
     async logout(@Req() req: Request) {
         try {
             await this.authService.logout(req.user!.id);
@@ -92,6 +115,10 @@ export class AuthController {
     }
 
     @Post("refresh")
+    @ApiOperation({ summary: "Refresh access token using refresh token" })
+    @ApiBody({ type: RefreshTokenDto })
+    @ApiResponse({ status: 200, description: "Tokens refreshed successfully", type: RefreshResponseDto })
+    @ApiResponse({ status: 401, description: "Invalid or expired refresh token", type: ErrorResponseDto })
     async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
         try {
             const tokens = await this.authService.validateAndRotateRefreshToken(
