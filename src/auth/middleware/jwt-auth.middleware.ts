@@ -32,7 +32,7 @@ export class JwtAuthMiddleware implements NestMiddleware {
       }
       const payload = jwt.verify(token, secretKey) as JwtUserPayload;
 
-      const user = await this.userRepository.findById(payload.id);
+      const user = await this.userRepository.findByIdInternal(payload.id);
       if (!user) {
         throw new UnauthorizedException('User not found');
       }

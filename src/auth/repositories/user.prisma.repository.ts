@@ -33,7 +33,7 @@ export class UserPrismaRepository implements IUserRepository {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async findById(id: string): Promise<UserWithRefreshToken | null> {
+  async findByIdInternal(id: string): Promise<UserWithRefreshToken | null> {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) return null;
     return {
@@ -44,6 +44,12 @@ export class UserPrismaRepository implements IUserRepository {
       refresh_token: user.refresh_token,
       force_login: user.force_login
     };
+  }
+    
+    async findById(id: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) return null;
+    return user ? this.toModel(user) : null;
   }
 
   async updateRefreshToken(id: string, hashedRefreshToken: string | null): Promise<void> {
@@ -58,6 +64,19 @@ export class UserPrismaRepository implements IUserRepository {
       where: { id },
       data: { refresh_token: null, force_login: true }
     });
+  }
+
+  async findAll(options: { skip?: number, take?: number } = {}): Promise<User[]> {
+    const users = await this.prisma.user.findMany(options);
+    return users.map((u) => this.toModel(u));
+  }
+
+  async updateDisplayName(id: string, display_name: string): Promise<User> {
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: { display_name },
+    });
+    return this.toModel(user);
   }
 
   async delete(id: string): Promise<void> {

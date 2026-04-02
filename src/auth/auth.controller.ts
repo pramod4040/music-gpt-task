@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Req } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiBody, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
 import { Request } from "express";
-import { UserService } from "./user.service";
+import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
 import {
     CreateUserDto,
@@ -21,7 +21,7 @@ import { SubscriptionStatus } from "generated/prisma/enums";
 @Controller('auth')
 export class AuthController {
     constructor(
-        private readonly userService: UserService,
+        private readonly userService: UsersService,
         private readonly authService: AuthService
     ) {}
 

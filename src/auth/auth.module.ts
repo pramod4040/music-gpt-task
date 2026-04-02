@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UserService } from './user.service';
+import { UsersService } from "../users/users.service";
 import { UserPrismaRepository } from './repositories/user.prisma.repository';
 import { JwtAuthMiddleware } from './middleware/jwt-auth.middleware';
 
@@ -13,7 +13,8 @@ import { JwtAuthMiddleware } from './middleware/jwt-auth.middleware';
     JwtModule.register({}),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService, UserPrismaRepository],
+  providers: [AuthService, UsersService, UserPrismaRepository],
+  exports: [UserPrismaRepository],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

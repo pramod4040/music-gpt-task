@@ -17,3 +17,9 @@ When user logout we set the force_login field to true, it will check the in midd
 # RateLimiting
 
 Rate Limiting code is inside common/guard/ratelimit, i am using sliding window rate limit technique, i have registers rate-limit-guards with APP_GUARD so it will use that guard in all routes, for pubic route we will skit the rate limit checking mechanism automatically! checkout it rate-limit.guard.ts
+
+
+# Paginated + Cached
+
+For Pagination we have implmented the offset based pagination, and for caching i have created cacheable decorator any method we need to cache the result we can use cachable it will cache it in redis, and to invalidate the cache we can use CashInvalidate decorator it accepts exact keys, pattern and buildKeys params according to our need we can pass params and invalidate the cache in required methods.
+
