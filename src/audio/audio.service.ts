@@ -20,4 +20,10 @@ export class AudioService {
     await this.findByIdAndUser(id, userId);
     return this.audioRepository.updateTitle(id, userId, title);
   }
+
+  async create(userId: string, promptId: string, text: string, url: string): Promise<AudioDto> {
+    return this.audioRepository.create(userId, promptId, text, url);
+  }
+
+
 }

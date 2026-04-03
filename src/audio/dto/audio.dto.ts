@@ -11,7 +11,7 @@ export class UpdateAudioTitleDto {
 
 export class AudioDto {
   @ApiProperty({ example: "uuid-v4" })
-  id: string;
+  id?: string;
 
   @ApiProperty({ example: "uuid-v4" })
   prompt_id: string;

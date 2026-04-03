@@ -3,6 +3,7 @@ import { Worker, Job } from 'bullmq';
 import { QUEUE_FREE, QUEUE_PAID } from '../constants';
 import { RedisService } from '../../common/redis/redis.service';
 import { PromptService } from '../../prompt/prompt.service';
+import { AudioService } from '../../audio/audio.service';
 
 @Injectable()
 export class PromptWorkerService implements OnModuleInit, OnModuleDestroy {
@@ -13,13 +14,14 @@ export class PromptWorkerService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly redisService: RedisService,
     private readonly promptService: PromptService,
+    private readonly audioService: AudioService
   ) {}
 
   onModuleInit() {
     const connection = this.redisService.getClient();
     const processor = (job: Job) => this.processPrompt(job);
 
-    this.freeWorker = new Worker(QUEUE_FREE, processor, { connection, concurrency: 5 });
+    this.freeWorker = new Worker(QUEUE_FREE, processor, { connection, concurrency: 2, limiter: { max: 10, duration: 60_000 } });
     this.paidWorker = new Worker(QUEUE_PAID, processor, { connection, concurrency: 15 });
 
     this.freeWorker.on('failed', (job, err) =>
@@ -30,22 +32,22 @@ export class PromptWorkerService implements OnModuleInit, OnModuleDestroy {
     );
   }
 
-  private async processPrompt(job: Job): Promise<any> {
-    const { promptId } = job.data;
+  private async processPrompt(job: Job): Promise<void> {
+    const { promptId, userId } = job.data;
     this.logger.log(`Processing prompt ${promptId}`);
 
     await this.promptService.update(promptId, 'PROCESSING');
 
     console.log("External service processing it!");
-    await new Promise((resolve, reject) => {
+    let aiResult = await new Promise<{ title: string, url: string }>((resolve, reject) => {
       setTimeout(() => {
-        //
+        resolve({title: `Music Title for ${promptId}`, url: `http://localhost:3001/listen/audio/${userId}`});
       }, 3000)
     })
 
     await this.promptService.update(promptId, 'COMPLETED');
+    await this.audioService.create(promptId, userId, aiResult.title, aiResult.url)
     this.logger.log(`Task is completed ${promptId}`);
-    return { status: "success"}
   }
 
   async onModuleDestroy() {

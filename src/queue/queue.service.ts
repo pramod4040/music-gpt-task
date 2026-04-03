@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Queue } from 'bullmq';
+import { delay, Queue } from 'bullmq';
 import { QUEUE_FREE, QUEUE_PAID } from './constants';
 import { RedisService } from '../common/redis/redis.service';
 
@@ -16,11 +16,18 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     this.paidQueue = new Queue(QUEUE_PAID, { connection });
   }
 
-  async add(promptId: string, subscriptionStatus: string): Promise<void> {
+  async add(promptId: string, subscriptionStatus: string, userId: string): Promise<void> {
     if (subscriptionStatus === 'PAID') {
-      await this.paidQueue.add('process-prompt', { promptId });
+      await this.paidQueue.add('process-prompt', { promptId, userId });
     } else {
-      await this.freeQueue.add('process-prompt', { promptId });
+      let freeQueuLength = await this.freeQueue.count();
+
+      if (freeQueuLength > 200) {
+        // user should try later caseu there are alreay many task in the line
+        return;
+      }
+
+      await this.freeQueue.add('process-prompt', { promptId, userId } );
     }
   }
 

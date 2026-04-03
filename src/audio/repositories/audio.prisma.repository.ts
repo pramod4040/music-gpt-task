@@ -21,4 +21,10 @@ export class AudioPrismaRepository implements IAudioRepository {
       data: { title },
     });
   }
+
+  async create(userId: string, promptId: string, title: string, url: string): Promise<AudioDto> {
+    return this.prisma.audio.create({
+      data: { user_id: userId, prompt_id: promptId, title: title, url: url }
+    });
+  }
 }
