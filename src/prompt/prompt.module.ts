@@ -6,5 +6,6 @@ import { PromptPrismaRepository } from "./repositories/prompt.prisma.repository"
 @Module({
   controllers: [PromptController],
   providers: [PromptService, PromptPrismaRepository],
+  exports: [PromptService],
 })
 export class PromptModule {}

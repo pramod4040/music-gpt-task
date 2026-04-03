@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PromptPrismaRepository } from "./repositories/prompt.prisma.repository";
 import { PromptDto } from "./dto/prompt.dto";
+import { PromptStatus } from "../../generated/prisma/enums";
 
 @Injectable()
 export class PromptService {
@@ -14,11 +15,11 @@ export class PromptService {
     return this.promptRepository.getPendingPromptWitUsers(batch);
   }
 
-  async update(id: string, status: string): Promise<PromptDto> {
+  async update(id: string, status: PromptStatus): Promise<PromptDto> {
     return this.promptRepository.update(id, status);
   }
 
-  async bulkUpdate(ids: string[], status: string): Promise<void> {
+  async bulkUpdate(ids: string[], status: PromptStatus): Promise<void> {
     return this.promptRepository.bulkUpdate(ids, status);
   }
 }

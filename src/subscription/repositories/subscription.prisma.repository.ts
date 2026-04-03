@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { SubscriptionStatus } from "generated/prisma/enums";
 import { PrismaService } from "lib/prisma.service";
 import { ISubscriptionRepository } from "./subscription.repository.interface";
+import { CacheInvalidate } from "../../common/cache";
 
 @Injectable()
 export class SubscriptionPrismaRepository implements ISubscriptionRepository {

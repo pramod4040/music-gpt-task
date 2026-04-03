@@ -15,7 +15,10 @@ export function CacheInvalidate(options: CacheInvalidateOptions) {
 
       try {
             const cache = this.cacheService;
-            if (!cache) return result;
+            if (!cache) {
+                console.warn("Cache service is missing unable to use CacheInvalidate!");
+                return result;
+            }
 
             const tasks: Promise<void>[] = [];
 

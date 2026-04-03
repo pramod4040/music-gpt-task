@@ -1,31 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PromptService } from '../prompt/prompt.service';
-import { Queue } from 'bullmq';
+import { QueueService } from './queue.service';
 
 @Injectable()
 export class CronService {
+  private readonly logger = new Logger(CronService.name);
+
   constructor(
-    private promptService: PromptService,
-    private queue: Queue, // inject properly (shown later)
+    private readonly promptService: PromptService,
+    private readonly queueService: QueueService,
   ) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS) // adjust as needed
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async handlePendingJobs() {
-    console.log('Cron running...');
-
-    const pendingItems = await this.promptService.getPendingPromptWitUsers(50);
-
+    const pendingItems = await this.promptService.getPendingPromptWitUsers(25);
     if (pendingItems.length === 0) return;
 
-    let queuedPromptsIds: string[] = [];
+    console.log('this is testing');
+
+    const ids = pendingItems.map((item: any) => item.id);
+    await this.promptService.bulkUpdate(ids, 'QUEUED');
+
     for (const item of pendingItems) {
-      await this.queue.add('process-task', {
-        taskId: item.id,
-      });
-      queuedPromptsIds.push(item.id)
+      await this.queueService.add(item.id, item.user.subscription_status);
     }
 
-    await this.promptService.bulkUpdate(queuedPromptsIds, 'PROCESSING');
+    this.logger.log(`Queued ${pendingItems.length} prompts`);
   }
 }

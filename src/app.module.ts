@@ -8,6 +8,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { UsersModule } from './users/users.module';
 import { AudioModule } from './audio/audio.module';
 import { PromptModule } from './prompt/prompt.module';
+import { QueueModule } from './queue/queue.module';
 import { RateLimitModule } from './common/guard/ratelimit/rate-limit.module';
 import { RedisModule } from './common/redis/redis.module';
 import { CacheModule } from './common/cache/cache.module';
@@ -25,6 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     UsersModule,
     AudioModule,
     PromptModule,
+    QueueModule,
     PrismaModule,
     RedisModule,
     RateLimitModule,
