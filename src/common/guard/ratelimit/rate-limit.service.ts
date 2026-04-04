@@ -12,7 +12,7 @@ export class RateLimitService {
         const now = Date.now();
         const windowSize = 60 * 1000; // 60 sec
 
-        // 1. Remove old requests (outside window)
+        // 1. Remove old requests (outside window) // sorted sets
         await client.zremrangebyscore(key, 0, now - windowSize);
 
         // 2. Count current requests

@@ -6,6 +6,7 @@ import {
   ApiBody,
   ApiResponse,
   ApiBearerAuth,
+  ApiQuery
 } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
 import {
@@ -25,6 +26,8 @@ export class UsersController {
   @Get()
   @ApiOperation({ summary: "Get all users" })
   @ApiResponse({ status: 200, description: "List of users", type: UsersListResponseDto })
+  @ApiQuery({ name: 'page', description: 'Page', required: false })
+  @ApiQuery({ name: 'limit', description: 'Limit item per page', required: false })
   async findAll(
     @Query('page') page: string = "1",
     @Query('limit') limit: string = "20"

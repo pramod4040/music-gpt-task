@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PromptService } from '../prompt/prompt.service';
 import { QueueService } from './queue.service';
-import { AudioService } from '../audio/audio.service';
 
 @Injectable()
 export class CronService {

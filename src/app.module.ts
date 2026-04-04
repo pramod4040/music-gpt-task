@@ -10,6 +10,7 @@ import { AudioModule } from './audio/audio.module';
 import { PromptModule } from './prompt/prompt.module';
 import { QueueModule } from './queue/queue.module';
 import { GatewayModule } from './gateway/gateway.module';
+import { SearchModule } from './search/search.module';
 import { RateLimitModule } from './common/guard/ratelimit/rate-limit.module';
 import { RedisModule } from './common/redis/redis.module';
 import { CacheModule } from './common/cache/cache.module';
@@ -29,6 +30,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     PromptModule,
     QueueModule,
     GatewayModule,
+    SearchModule,
     PrismaModule,
     RedisModule,
     RateLimitModule,

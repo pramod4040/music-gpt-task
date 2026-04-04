@@ -44,7 +44,7 @@ export class PromptWorkerService implements OnModuleInit, OnModuleDestroy {
     let aiResult = await new Promise<{ title: string, url: string }>((resolve, reject) => {
       setTimeout(() => {
         resolve({title: `Music Title for ${promptId}`, url: `http://localhost:3001/listen/audio/${userId}`});
-      }, 3000)
+      }, 4000)
     })
 
     await this.promptService.update(promptId, 'COMPLETED');

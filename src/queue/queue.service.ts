@@ -17,15 +17,13 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   }
 
   async add(promptId: string, subscriptionStatus: string, userId: string): Promise<void> {
-    console.log(userId)
-    console.log('here i am adding jobs')
     if (subscriptionStatus === 'PAID') {
       await this.paidQueue.add('process-prompt', { promptId, userId });
     } else {
       let freeQueuLength = await this.freeQueue.count();
 
       if (freeQueuLength > 200) {
-        // user should try later caseu there are alreay many task in the line
+        // user should try later cause there are alreay many task in the line,
         return;
       }
 
