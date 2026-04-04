@@ -22,7 +22,7 @@ export class CronService {
     await this.promptService.bulkUpdate(ids, 'QUEUED');
 
     for (const item of pendingItems) {
-      await this.queueService.add(item.id, item.user.subscription_status, item.user.user_id);
+      await this.queueService.add(item.id, item.user.subscription_status, item.user.id);
     }
 
     this.logger.log(`Queued ${pendingItems.length} prompts`);

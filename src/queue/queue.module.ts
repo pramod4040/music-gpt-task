@@ -5,9 +5,10 @@ import { PromptWorkerService } from './workers/prompt.worker.service';
 import { PromptModule } from '../prompt/prompt.module';
 import { AudioPrismaRepository } from '../audio/repositories/audio.prisma.repository';
 import { AudioService } from '../audio/audio.service';
+import { GatewayModule } from '../gateway/gateway.module';
 
 @Module({
-  imports: [PromptModule],
+  imports: [PromptModule, GatewayModule],
   providers: [CronService, QueueService, PromptWorkerService, AudioService, AudioPrismaRepository],
   exports: [QueueService],
 })

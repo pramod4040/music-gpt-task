@@ -17,6 +17,8 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   }
 
   async add(promptId: string, subscriptionStatus: string, userId: string): Promise<void> {
+    console.log(userId)
+    console.log('here i am adding jobs')
     if (subscriptionStatus === 'PAID') {
       await this.paidQueue.add('process-prompt', { promptId, userId });
     } else {

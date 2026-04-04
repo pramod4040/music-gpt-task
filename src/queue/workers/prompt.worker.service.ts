@@ -4,6 +4,7 @@ import { QUEUE_FREE, QUEUE_PAID } from '../constants';
 import { RedisService } from '../../common/redis/redis.service';
 import { PromptService } from '../../prompt/prompt.service';
 import { AudioService } from '../../audio/audio.service';
+import { GatewayService } from '../../gateway/gateway.service';
 
 @Injectable()
 export class PromptWorkerService implements OnModuleInit, OnModuleDestroy {
@@ -14,7 +15,8 @@ export class PromptWorkerService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly redisService: RedisService,
     private readonly promptService: PromptService,
-    private readonly audioService: AudioService
+    private readonly audioService: AudioService,
+    private readonly gatewayService: GatewayService,
   ) {}
 
   onModuleInit() {
@@ -34,7 +36,7 @@ export class PromptWorkerService implements OnModuleInit, OnModuleDestroy {
 
   private async processPrompt(job: Job): Promise<void> {
     const { promptId, userId } = job.data;
-    this.logger.log(`Processing prompt ${promptId}`);
+    this.logger.log(`Processing prompt ${promptId} ${userId}`);
 
     await this.promptService.update(promptId, 'PROCESSING');
 
@@ -46,7 +48,8 @@ export class PromptWorkerService implements OnModuleInit, OnModuleDestroy {
     })
 
     await this.promptService.update(promptId, 'COMPLETED');
-    await this.audioService.create(promptId, userId, aiResult.title, aiResult.url)
+    await this.audioService.create(userId, promptId, aiResult.title, aiResult.url);
+    this.gatewayService.emitToUser(userId, 'prompt-completed', { promptId, title: aiResult.title, url: aiResult.url });
     this.logger.log(`Task is completed ${promptId}`);
   }
 
