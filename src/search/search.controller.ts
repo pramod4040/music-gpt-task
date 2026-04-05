@@ -7,7 +7,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { SearchService } from './search.service';
-import { SearchQueryDto, SearchResponseDto } from './dto/search.dto';
+import { SearchQueryDto, SearchResponseDto, ErrorMessage } from './dto/search.dto';
 
 @ApiTags('Search')
 @ApiBearerAuth()
@@ -29,7 +29,11 @@ export class SearchController {
     status: 200,
     description: 'Search results with ranking scores and next_cursor per entity',
   })
-  async search(@Query() query: SearchQueryDto): Promise<SearchResponseDto> {
-    return this.searchService.search(query);
+  async search(@Query() query: SearchQueryDto): Promise<SearchResponseDto | ErrorMessage> {
+    try {
+      return this.searchService.search(query);
+    } catch (error) {
+      return { status: "error", message: error.message }
+    }
   }
 }

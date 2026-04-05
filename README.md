@@ -8,6 +8,8 @@ You can switch different environment from .env file, Change value of APP_ENV in 
 
 # Music Gpt Task
 
+Deployed version: `https://music-gpt-task-ghcr-sha-87d751e.onrender.com`
+
 User can register them using the register api. `auth/register`
 Login using login api and they can generate the music using the `/prompt` api it will queue the prompt and generate the music.
 

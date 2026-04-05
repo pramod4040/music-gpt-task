@@ -64,3 +64,8 @@ export interface SearchResponseDto {
   users: SearchEntityResult<UserSearchResult>;
   audio: SearchEntityResult<AudioSearchResult>;
 }
+
+export interface ErrorMessage {
+  status: string,
+  message: string
+}
