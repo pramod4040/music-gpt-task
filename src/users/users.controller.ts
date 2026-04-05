@@ -11,7 +11,7 @@ import {
 import { UsersService } from "./users.service";
 import {
   UpdateDisplayNameDto,
-  UserResponseDto,
+  GetUserResponseDto,
   UsersListResponseDto,
   UserNotFoundResponseDto,
 } from "./dto/user.dto";
@@ -40,7 +40,7 @@ export class UsersController {
   @Get(":id")
   @ApiOperation({ summary: "Get a user by ID" })
   @ApiParam({ name: "id", description: "User ID" })
-  @ApiResponse({ status: 200, description: "User found", type: UserResponseDto })
+  @ApiResponse({ status: 200, description: "User found", type: GetUserResponseDto })
   @ApiResponse({ status: 404, description: "User not found", type: UserNotFoundResponseDto })
   async findOne(@Param("id") id: string) {
     try {
@@ -55,7 +55,7 @@ export class UsersController {
   @ApiOperation({ summary: "Update user display name" })
   @ApiParam({ name: "id", description: "User ID" })
   @ApiBody({ type: UpdateDisplayNameDto })
-  @ApiResponse({ status: 200, description: "User updated", type: UserResponseDto })
+  @ApiResponse({ status: 200, description: "User updated", type: GetUserResponseDto })
   @ApiResponse({ status: 404, description: "User not found", type: UserNotFoundResponseDto })
   async updateDisplayName(
     @Param("id") id: string,

@@ -19,8 +19,11 @@ import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env.development',
       isGlobal: true,
+      envFilePath: [
+        `.env.${process.env.APP_ENV}`,
+        '.env',
+      ],
     }),
     ScheduleModule.forRoot(),
     AuthModule,

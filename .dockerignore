@@ -1,0 +1,10 @@
+node_modules
+dist
+generated
+.git
+.gitignore
+*.md
+.env
+.env.*
+coverage
+test

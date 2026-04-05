@@ -31,7 +31,7 @@ export class UsersListResponseDto {
   data: UserDto[];
 }
 
-export class UserResponseDto {
+export class GetUserResponseDto {
   @ApiProperty({ example: "success" })
   status: string;
 

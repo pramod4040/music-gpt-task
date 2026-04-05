@@ -1,6 +1,5 @@
 import { Controller, Get, UseGuards, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { RateLimitGuard } from './common/guard/ratelimit/rate-limit.guard';
 
 @Controller()
 export class AppController {

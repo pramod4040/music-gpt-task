@@ -1,11 +1,22 @@
+# How to run
+
+- Clone the project
+- Run `docker compose build`
+- Run `docker compose up`
+
+You can switch different environment from .env file, Change value of APP_ENV in .evn file. (development, qa and prod). Environment specific keys value will be stored in .env.development or .env.qa or .env.production
+
 # Music Gpt Task
 
-User can register them using the register api. Login using login api and they can generate the music using the `/prompt` api it will queue the prompt and generate the music.
+User can register them using the register api. `auth/register`
+Login using login api and they can generate the music using the `/prompt` api it will queue the prompt and generate the music.
 
 
 # Authentication
 
-I have used JWT authentication system, when user login with their email and password api will return accesstoken and refreshtoken, accesstoken expires in 10 minutes but refreshtoken is valid for 7 days. After 10 min when user call any protected route it will throw 401 Unauthorized, if 401 is return, FE can call `auth/refresh` api with refreshToken in body. We can exchange accesstoken and refreshtoken, but one refreshtoken can only be used once. 
+I have used JWT authentication system, when user login with their email and password api will return accesstoken and refreshtoken, accesstoken expires in 10 minutes but refreshtoken is valid for 7 days.
+
+After 10 min when user call any protected route it will throw 401 Unauthorized, if 401 is return, FE can call `auth/refresh` api with refreshToken in body. We can exchange accesstoken and refreshtoken, but one refreshtoken can only be used once. 
 
  ## Token Invalidation
 - When user call auth/refresh we invalidate the old refresh token and issue new access token and refresh token
@@ -36,7 +47,7 @@ I have created seperate module for search, search can be bigger and more complex
 
 # CRUD Endpoints: Paginated + Cached
 
-For Pagination we have implmented the offset based pagination for crud, and for caching i have created `Cacheable` decorator any method we need to cache the result we can use cachable it will cache it in redis, and to invalidate the cache we can use `CashInvalidate` decorator it accepts exact keys, pattern and buildKeys params according to our need we can pass params and invalidate the cache in required methods.
+For Pagination we have implmented the offset based pagination for crud, and for caching i have created `Cacheable` decorator any method we need to cache the result we can use cachable it will cache it in redis, and to invalidate the cache we can use `CashInvalidate` decorator it accepts exact keys, pattern and buildKeys params according to our need we can invalidate the cache.
 
 
 # Generation Simulation ( CRON + Worker + WebSockers )

@@ -58,6 +58,7 @@ export class AuthController {
     @ApiResponse({ status: 500, description: "Invalid credentials", type: ErrorResponseDto })
     async login(@Body() loginUserDto: LoginUserDto) {
         try {
+            console.log(process.env.NODE_ENV);
             const user = await this.authService.isValidUser(loginUserDto.email, loginUserDto.password);
             if (!user) {
                 return {
